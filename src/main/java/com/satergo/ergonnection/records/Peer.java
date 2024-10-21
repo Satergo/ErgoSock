@@ -4,6 +4,7 @@ import com.satergo.ergonnection.VLQInputStream;
 import com.satergo.ergonnection.VLQOutputStream;
 import com.satergo.ergonnection.Version;
 import com.satergo.ergonnection.protocol.ProtocolRecord;
+import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -15,7 +16,7 @@ import java.util.List;
 import java.util.Objects;
 
 public record Peer(String agentName, String peerName, Version version, List<Feature> features,
-				   InetSocketAddress publicAddress) implements ProtocolRecord {
+				   @Nullable InetSocketAddress publicAddress) implements ProtocolRecord {
 
 	public Peer {
 		if (agentName.length() > 255) throw new IllegalArgumentException("agentName is too long (max 255)");

@@ -26,6 +26,7 @@ repositories {
 dependencies {
     api 'org.scorexfoundation:sigma-state_2.13:5.0.9'
     implementation 'org.bouncycastle:bcprov-jdk18on:1.78.1'
+    api 'org.jspecify:jspecify:1.0.0'
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.11.2'

@@ -2,7 +2,6 @@ package com.satergo.ergonnection.modifiers.data;
 
 import java.util.Arrays;
 import java.util.HexFormat;
-import java.util.Objects;
 
 public record TokenId(byte[] id) {
 

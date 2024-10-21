@@ -5,6 +5,7 @@ import com.satergo.ergonnection.VLQOutputStream;
 import com.satergo.ergonnection.modifiers.data.AutolykosSolution;
 import com.satergo.ergonnection.protocol.ProtocolModifier;
 import org.bouncycastle.jcajce.provider.digest.Blake2b.Blake2b256;
+import org.jspecify.annotations.Nullable;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -16,7 +17,7 @@ public record Header(byte[] id, byte version, byte[] parentId, byte[] adProofsRo
 
 	public static final int TYPE_ID = 101;
 
-	public static Header deserialize(byte[] id, byte[] data) throws IOException {
+	public static Header deserialize(byte @Nullable [] id, byte[] data) throws IOException {
 		if (id == null) {
 			id = new Blake2b256().digest(data);
 		}

@@ -5,6 +5,7 @@ import com.satergo.ergonnection.protocol.ProtocolMessage;
 import com.satergo.ergonnection.records.Feature;
 import com.satergo.ergonnection.records.Peer;
 import org.bouncycastle.jcajce.provider.digest.Blake2b.Blake2b256;
+import org.jspecify.annotations.Nullable;
 
 import java.io.*;
 import java.net.InetSocketAddress;
@@ -27,7 +28,7 @@ public class ErgoSocket extends Socket {
 
 	private final Peer self;
 
-	private Peer peer;
+	private @Nullable Peer peer;
 	// Note: Using DataInputStream instead of VLQInputStream here is intentional
 	private final DataInputStream in;
 
@@ -59,11 +60,12 @@ public class ErgoSocket extends Socket {
 		this(address, self, MAINNET_MAGIC);
 	}
 
-	private MessageListener messageListener;
+	private @Nullable MessageListener messageListener;
 
 	/**
-	 * Starts a listener thread unless the socket already had one in which case it is reused.
-	 * After calling this method, {@link #acceptHandshake()} must not be used.
+	 * Starts a listener thread unless the socket already had one in which case it is returned.
+	 * The handshake must already have been finished before this is used.
+	 * After calling this method, {@link #acceptMessage()} must not be used.
 	 *
 	 * @return The listener object, for adding consumers
 	 */

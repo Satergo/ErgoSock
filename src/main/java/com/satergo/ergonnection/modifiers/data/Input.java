@@ -10,7 +10,7 @@ import java.util.Objects;
 
 public record Input(byte[] id, ProverResult spendingProof) {
 
-	public static Input deserialize(SigmaByteReader sbr) throws IOException {
+	public static Input deserialize(SigmaByteReader sbr) {
 		byte[] id = sbr.getBytes(32);
 		byte[] proofBytes = sbr.getBytes(sbr.getUShort());
 		ContextExtension contextExtension = ContextExtension.deserialize(sbr);

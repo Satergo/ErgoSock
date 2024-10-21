@@ -2,6 +2,7 @@ package com.satergo.ergonnection.modifiers.data;
 
 import com.satergo.ergonnection.VLQOutputStream;
 import org.ergoplatform.ErgoBox;
+import org.jspecify.annotations.Nullable;
 import sigmastate.SType;
 import sigmastate.Values;
 import sigmastate.serialization.ErgoTreeSerializer;
@@ -20,7 +21,7 @@ public record ErgoBoxCandidate(long value,
 							   Map<TokenId, Long> tokens,
 							   LinkedHashMap<ErgoBox.NonMandatoryRegisterId, Values.EvaluatedValue<SType>> additionalRegisters) implements ErgoBoxAssets {
 
-	public static ErgoBoxCandidate parseBodyWithIndexedDigests(List<TokenId> digestsInTx, SigmaByteReader sbr) {
+	public static ErgoBoxCandidate parseBodyWithIndexedDigests(@Nullable List<TokenId> digestsInTx, SigmaByteReader sbr) {
 		long value = sbr.getULong();
 
 		Values.ErgoTree tree = ErgoTreeSerializer.DefaultSerializer().deserializeErgoTree(
@@ -53,7 +54,7 @@ public record ErgoBoxCandidate(long value,
 		return new ErgoBoxCandidate(value, tree, creationHeight, tokens, registers);
 	}
 
-	public void serializeWithIndexedDigests(VLQOutputStream out, List<TokenId> tokensInTx) throws IOException {
+	public void serializeWithIndexedDigests(VLQOutputStream out, @Nullable List<TokenId> tokensInTx) throws IOException {
 		out.writeUnsignedLong(value);
 
 		out.write(ErgoTreeSerializer.DefaultSerializer().serializeErgoTree(ergoTree));

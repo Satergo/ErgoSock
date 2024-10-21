@@ -7,6 +7,7 @@ import com.satergo.ergonnection.modifiers.data.ErgoBoxCandidate;
 import com.satergo.ergonnection.modifiers.data.Input;
 import com.satergo.ergonnection.modifiers.data.TokenId;
 import com.satergo.ergonnection.protocol.ProtocolModifier;
+import org.jspecify.annotations.Nullable;
 import sigmastate.serialization.SigmaSerializer;
 import sigmastate.utils.SigmaByteReader;
 
@@ -15,10 +16,10 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * @param id optional (nullable)
- * @param size optional (nullable)
+ * @param id optional
+ * @param size optional
  */
-public record ErgoTransaction(byte[] id, List<Input> inputs, List<DataInput> dataInputs, List<ErgoBoxCandidate> outputCandidates, Integer size) implements ProtocolModifier {
+public record ErgoTransaction(byte @Nullable [] id, List<Input> inputs, List<DataInput> dataInputs, List<ErgoBoxCandidate> outputCandidates, @Nullable Integer size) implements ProtocolModifier {
 
 	public ErgoTransaction {
 		if (id != null && id.length != 32) throw new IllegalArgumentException("id must be 32 bytes");
