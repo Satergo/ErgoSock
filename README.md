@@ -17,7 +17,7 @@ Ergonnection is a Java 17+ library for communicating with nodes of the [Ergo](ht
 It can be used both in blocking mode which does not start a new thread and requires you to accept messages manually and in non-blocking mode which takes listeners and calls them from another thread.
 
 ```java
-ErgoSocket ergoSocket = new ErgoSocket(new InetSocketAddress("127.0.0.1", 9030), new Peer("mysocket", "mysocket-1.0.0", Version.parse("5.0.12"), ErgoSocket.BASIC_FEATURE_SET));
+ErgoSocket ergoSocket = new ErgoSocket(new InetSocketAddress("127.0.0.1", 9030), new Peer("mysocket", "mysocket-1.0.0", Version.parse("5.0.24"), ErgoSocket.BASIC_FEATURE_SET));
 ergoSocket.sendHandshake();
 ergoSocket.acceptHandshake();
 ```
@@ -68,5 +68,5 @@ The blockchain is not saved and nothing is checked.
 Note that if you only intend to receive messages and not do anything, you will be disconnected
 after 10 minutes by the other peer. For this reason, make sure to not remain inactive for 10 minutes.
 
-Also note that the other peer could disconnect you (peer eviction), so make sure to set up
-auto-reconnection logic if you intend to stay connected for a long amount of time.
+Also note that the other peer could disconnect you either way (peer eviction), so make sure to set up
+auto-reconnection logic if you intend to stay connected for a long time.

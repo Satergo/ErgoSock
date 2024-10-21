@@ -12,16 +12,11 @@ import sigmastate.utils.SigmaByteReader;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * @param id optional (nullable)
- * @param inputs
- * @param dataInputs
- * @param outputCandidates
- * @param size optional
+ * @param size optional (nullable)
  */
 public record ErgoTransaction(byte[] id, List<Input> inputs, List<DataInput> dataInputs, List<ErgoBoxCandidate> outputCandidates, Integer size) implements ProtocolModifier {
 
@@ -43,7 +38,7 @@ public record ErgoTransaction(byte[] id, List<Input> inputs, List<DataInput> dat
 		for (int i = 0; i < inputCount; i++) {
 			inputs.add(Input.deserialize(sbr));
 		}
-		in.skipBytes(available - sbr.remaining());
+		in.skipNBytes(available - sbr.remaining());
 
 		int dataInputCount = in.readUnsignedShort();
 		ArrayList<DataInput> dataInputs = new ArrayList<>();
@@ -65,7 +60,7 @@ public record ErgoTransaction(byte[] id, List<Input> inputs, List<DataInput> dat
 			ErgoBoxCandidate ergoBoxCandidate = ErgoBoxCandidate.parseBodyWithIndexedDigests(tokens, sbr);
 			outputCandidates.add(ergoBoxCandidate);
 		}
-		in.skipBytes(available - sbr.remaining());
+		in.skipNBytes(available - sbr.remaining());
 
 		return new ErgoTransaction(
 				id,
@@ -97,4 +92,17 @@ public record ErgoTransaction(byte[] id, List<Input> inputs, List<DataInput> dat
 	}
 
 	@Override public int typeId() { return TYPE_ID; }
+
+
+
+	@Override
+	public boolean equals(Object obj) {
+		return obj instanceof ErgoTransaction e && Arrays.equals(id, e.id) && inputs.equals(e.inputs)
+				&& dataInputs.equals(e.dataInputs) && outputCandidates.equals(e.outputCandidates) && Objects.equals(size, e.size);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(Arrays.hashCode(id), inputs, dataInputs, outputCandidates, size);
+	}
 }

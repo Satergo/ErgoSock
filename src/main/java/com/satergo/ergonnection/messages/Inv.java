@@ -5,9 +5,7 @@ import com.satergo.ergonnection.VLQOutputStream;
 import com.satergo.ergonnection.protocol.ProtocolMessage;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public record Inv(int typeId, List<byte[]> elements) implements ProtocolMessage {
 
@@ -33,4 +31,15 @@ public record Inv(int typeId, List<byte[]> elements) implements ProtocolMessage 
 	}
 
 	@Override public int code() { return CODE; }
+
+
+	@Override
+	public boolean equals(Object obj) {
+		return obj instanceof Inv i && typeId == i.typeId && InternalUtils.byteArrayListEquals(elements, i.elements);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(typeId, InternalUtils.byteArrayListHashCode(elements));
+	}
 }

@@ -31,4 +31,16 @@ public record SyncInfoOld(List<byte[]> lastHeaderIDs) implements ProtocolMessage
 	}
 
 	@Override public int code() { return CODE; }
+
+
+
+	@Override
+	public boolean equals(Object obj) {
+		return obj instanceof SyncInfoOld s && InternalUtils.byteArrayListEquals(lastHeaderIDs, s.lastHeaderIDs);
+	}
+
+	@Override
+	public int hashCode() {
+		return InternalUtils.byteArrayListHashCode(lastHeaderIDs);
+	}
 }

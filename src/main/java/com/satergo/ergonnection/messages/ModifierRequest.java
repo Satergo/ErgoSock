@@ -33,4 +33,16 @@ public record ModifierRequest(int typeId, List<byte[]> elements) implements Prot
 	}
 
 	@Override public int code() { return CODE; }
+
+
+
+	@Override
+	public boolean equals(Object obj) {
+		return obj instanceof ModifierRequest m && typeId == m.typeId && InternalUtils.byteArrayListEquals(elements, m.elements);
+	}
+
+	@Override
+	public int hashCode() {
+		return InternalUtils.byteArrayListHashCode(elements);
+	}
 }

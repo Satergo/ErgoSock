@@ -13,7 +13,7 @@ public record GetPeers() implements ProtocolMessage {
 	}
 
 	@Override public void serialize(VLQOutputStream out) {}
-	@Override public byte[] toByteArray() { return new byte[0]; }
+	@Override public byte[] toByteArray() { return InternalUtils.EMPTY; }
 
 	@Override public int code() { return CODE; }
 }

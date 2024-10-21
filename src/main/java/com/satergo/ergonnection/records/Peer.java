@@ -1,6 +1,5 @@
 package com.satergo.ergonnection.records;
 
-import com.satergo.ergonnection.InternalStreamUtils;
 import com.satergo.ergonnection.VLQInputStream;
 import com.satergo.ergonnection.VLQOutputStream;
 import com.satergo.ergonnection.Version;
@@ -9,6 +8,7 @@ import com.satergo.ergonnection.protocol.ProtocolRecord;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -33,9 +33,9 @@ public record Peer(String agentName, String peerName, Version version, List<Feat
 	}
 
 	public static Peer deserialize(VLQInputStream in) throws IOException {
-		String agentName = InternalStreamUtils.readUTF8ByteLen(in);
+		String agentName = readUTF8ByteLen(in);
 		Version version = Version.parse(in.readByte() + "." + in.readByte() + "." + in.readByte());
-		String peerName = InternalStreamUtils.readUTF8ByteLen(in);
+		String peerName = readUTF8ByteLen(in);
 		boolean hasPublicAddress = in.readBoolean();
 		InetSocketAddress publicAddress = null;
 		if (hasPublicAddress) {
@@ -57,11 +57,11 @@ public record Peer(String agentName, String peerName, Version version, List<Feat
 
 	@Override
 	public void serialize(VLQOutputStream out) throws IOException {
-		InternalStreamUtils.writeUTF8ByteLen(out, agentName);
+		writeUTF8ByteLen(out, agentName);
 		out.write(version().major());
 		out.write(version().minor());
 		out.write(version().patch());
-		InternalStreamUtils.writeUTF8ByteLen(out, peerName);
+		writeUTF8ByteLen(out, peerName);
 		out.writeBoolean(hasPublicAddress());
 		if (hasPublicAddress()) {
 			InetAddress address = publicAddress.getAddress();
@@ -73,5 +73,20 @@ public record Peer(String agentName, String peerName, Version version, List<Feat
 		for (Feature feature : features) {
 			feature.serialize(out);
 		}
+	}
+
+
+
+	private static void writeUTF8ByteLen(VLQOutputStream out, String s) throws IOException {
+		if (s.length() > 255) throw new IllegalArgumentException("too long");
+		byte[] bytes = s.getBytes(StandardCharsets.UTF_8);
+		out.write(bytes.length);
+		out.write(bytes);
+	}
+
+	private static String readUTF8ByteLen(VLQInputStream in) throws IOException {
+		int len = in.read();
+		byte[] bytes = in.readNFully(len);
+		return new String(bytes, StandardCharsets.UTF_8);
 	}
 }

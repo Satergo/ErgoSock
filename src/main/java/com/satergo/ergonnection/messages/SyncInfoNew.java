@@ -2,8 +2,8 @@ package com.satergo.ergonnection.messages;
 
 import com.satergo.ergonnection.VLQInputStream;
 import com.satergo.ergonnection.VLQOutputStream;
+import com.satergo.ergonnection.modifiers.Header;
 import com.satergo.ergonnection.protocol.ProtocolMessage;
-import com.satergo.ergonnection.records.Header;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,7 +20,9 @@ public record SyncInfoNew(List<Header> headers) implements ProtocolMessage {
 		int count = in.readUnsignedByte();
 		ArrayList<Header> headers = new ArrayList<>();
 		for (int i = 0; i < count; i++) {
-			headers.add(Header.deserialize(in));
+			int length = in.readUnsignedShort();
+			byte[] data = in.readNFully(length);
+			headers.add(Header.deserialize(null, data));
 		}
 		return new SyncInfoNew(Collections.unmodifiableList(headers));
 	}

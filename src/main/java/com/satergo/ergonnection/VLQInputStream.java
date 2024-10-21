@@ -18,10 +18,17 @@ public class VLQInputStream extends FilterInputStream {
 	}
 
 	// Classic methods
+
+	/**
+	 * @see java.io.DataInput#readFully(byte[])
+	 */
 	public void readFully(byte[] b) throws IOException {
 		readFully(b, 0, b.length);
 	}
 
+	/**
+	 * @see java.io.DataInput#readFully(byte[], int, int)
+	 */
 	public void readFully(byte[] b, int off, int len) throws IOException {
 		Objects.checkFromIndexSize(off, len, b.length);
 		int n = 0;
@@ -33,21 +40,13 @@ public class VLQInputStream extends FilterInputStream {
 		}
 	}
 
+	/**
+	 * Reads exactly {@code length} bytes and throws an exception otherwise.
+	 */
 	public byte[] readNFully(int length) throws IOException {
 		byte[] bytes = new byte[length];
 		readFully(bytes);
 		return bytes;
-	}
-
-	public int skipBytes(int n) throws IOException {
-		int total = 0;
-		int cur;
-
-		while ((total < n) && ((cur = (int) in.skip(n - total)) > 0)) {
-			total += cur;
-		}
-
-		return total;
 	}
 
 	public boolean readBoolean() throws IOException {
@@ -73,7 +72,7 @@ public class VLQInputStream extends FilterInputStream {
 
 	// VLQ methods
 	/**
-	 * @apiNote Uses VLQ then ZigZag decoding.
+	 * Reads using VLQ and then decodes the result using ZigZag.
 	 */
 	public short readShort() throws IOException {
 		return (short) decodeZigZagInt((int) readUnsignedLong());
@@ -87,7 +86,7 @@ public class VLQInputStream extends FilterInputStream {
 	}
 
 	/**
-	 * @apiNote Uses VLQ then ZigZag decoding.
+	 * Reads using VLQ and then decodes the result using ZigZag.
 	 */
 	public int readInt() throws IOException {
 		return decodeZigZagInt((int) readUnsignedLong());
@@ -101,7 +100,7 @@ public class VLQInputStream extends FilterInputStream {
 	}
 
 	/**
-	 * @apiNote Uses VLQ then ZigZag decoding.
+	 * Reads using VLQ and then decodes the result using ZigZag.
 	 */
 	public long readLong() throws IOException {
 		return decodeZigZagLong(readUnsignedLong());

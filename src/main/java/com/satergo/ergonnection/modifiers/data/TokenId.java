@@ -2,6 +2,7 @@ package com.satergo.ergonnection.modifiers.data;
 
 import java.util.Arrays;
 import java.util.HexFormat;
+import java.util.Objects;
 
 public record TokenId(byte[] id) {
 
@@ -17,5 +18,10 @@ public record TokenId(byte[] id) {
 	@Override
 	public boolean equals(Object obj) {
 		return obj instanceof TokenId tokenId && Arrays.equals(id, tokenId.id);
+	}
+
+	@Override
+	public int hashCode() {
+		return Arrays.hashCode(id);
 	}
 }

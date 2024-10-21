@@ -4,7 +4,7 @@ import com.satergo.ergonnection.protocol.Protocol;
 import com.satergo.ergonnection.protocol.ProtocolMessage;
 import com.satergo.ergonnection.records.Feature;
 import com.satergo.ergonnection.records.Peer;
-import org.bouncycastle.jcajce.provider.digest.Blake2b;
+import org.bouncycastle.jcajce.provider.digest.Blake2b.Blake2b256;
 
 import java.io.*;
 import java.net.InetSocketAddress;
@@ -41,6 +41,8 @@ public class ErgoSocket extends Socket {
 	 */
 	public ErgoSocket(InetSocketAddress address, Peer self, byte[] networkMagic) throws IOException {
 		super(address.getAddress(), address.getPort());
+		if (networkMagic.length != 4)
+			throw new IllegalArgumentException("networkMagic must be 4 bytes");
 		this.self = self;
 		this.networkMagic = networkMagic;
 		this.in = new DataInputStream(getInputStream());
@@ -60,7 +62,9 @@ public class ErgoSocket extends Socket {
 	private MessageListener messageListener;
 
 	/**
-	 * Starts a listener thread unless the socket already had one in which case it is reused
+	 * Starts a listener thread unless the socket already had one in which case it is reused.
+	 * After calling this method, {@link #acceptHandshake()} must not be used.
+	 *
 	 * @return The listener object, for adding consumers
 	 */
 	public MessageListener listen() {
@@ -80,7 +84,7 @@ public class ErgoSocket extends Socket {
 			out.write(message.code());
 			byte[] data = message.toByteArray();
 			out.writeInt(data.length);
-			byte[] checksum = new Blake2b.Blake2b256().digest(data);
+			byte[] checksum = new Blake2b256().digest(data);
 			out.write(checksum, 0, 4);
 			out.write(data);
 			out.flush();
@@ -89,11 +93,15 @@ public class ErgoSocket extends Socket {
 	}
 
 	/**
+	 * Blocks until a message has been received, deserializes it, and returns it.
+	 *
 	 * @throws SocketException if the socket is closed, or it was closed while the message was being read
+	 * @return A message from the peer
 	 */
 	public ProtocolMessage acceptMessage() throws IOException {
 		try {
-			byte[] magic = InternalStreamUtils.readNFully(in, 4);
+			byte[] magic = new byte[4];
+			in.readFully(magic);
 			if (!Arrays.equals(networkMagic, magic)) {
 				close();
 				throw new IllegalArgumentException("Incorrect magic " + Arrays.toString(magic) + " received (must be " + Arrays.toString(networkMagic) + ")");
@@ -101,7 +109,8 @@ public class ErgoSocket extends Socket {
 			int code = in.readUnsignedByte();
 			int length = in.readInt();
 			in.skipNBytes(4); // checksum
-			byte[] bytes = InternalStreamUtils.readNFully(in, length);
+			byte[] bytes = new byte[length];
+			in.readFully(bytes);
 			return Protocol.deserializeMessage(code, bytes);
 		} catch (EOFException e) {
 			// Receiving this exception is due to the socket being closed, but it will not have

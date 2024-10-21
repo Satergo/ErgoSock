@@ -28,17 +28,17 @@ public class VLQOutputStream extends FilterOutputStream {
 	 * Both negative and positive values are supported, but due to ZigZag, encoding positive
 	 * values is done less efficiently than by {@link #writeUnsignedShort}.
 	 * Use {@link #writeUnsignedShort} to encode values that are always positive.
-	 *
-	 * @apiNote The resulting varint uses ZigZag encoding as well, which is more efficient at
+	 * <p>
+	 * The resulting varint uses ZigZag encoding as well, which is more efficient at
 	 *       encoding negative values than pure VLQ.
-	 * @param x signed int
+	 * @param v signed int
 	 */
 	public void writeShort(short v) throws IOException {
 		writeUnsignedLong(encodeZigZagInt(v));
 	}
 
 	/**
-	 * @param x Unsigned short (0-0xFFFF) represented as int
+	 * @param v Unsigned short (0-0xFFFF) represented as int
 	 * @throws IllegalArgumentException for values not in unsigned short range
 	 */
 	public void writeUnsignedShort(int v) throws IOException {
@@ -52,8 +52,8 @@ public class VLQOutputStream extends FilterOutputStream {
 	 * Both negative and positive values are supported, but due to ZigZag, encoding positive
 	 * values is done less efficiently than by {@link #writeUnsignedInt}.
 	 * Use {@link #writeUnsignedInt} to encode values that are positive.
-	 *
-	 * @apiNote The resulting varint uses ZigZag encoding as well, which is more efficient at
+	 * <p>
+	 * The resulting varint uses ZigZag encoding as well, which is more efficient at
 	 *       encoding negative values than pure VLQ.
 	 */
 	public void writeInt(int v) throws IOException {
@@ -65,7 +65,7 @@ public class VLQOutputStream extends FilterOutputStream {
 	 * Only positive values are supported. Use {@link #writeInt}
 	 * to encode negative and positive values.
 	 *
-	 * @param x Unsigned int (0-0xFFFFFFFF) represented as long
+	 * @param v Unsigned int (0-0xFFFFFFFF) represented as long
 	 * @throws IllegalArgumentException for values not in unsigned int range
 	 */
 	public void writeUnsignedInt(long v) throws IOException {
@@ -79,8 +79,8 @@ public class VLQOutputStream extends FilterOutputStream {
 	 * Both negative and positive values are supported, but due to ZigZag, encoding positive
 	 * values is done less efficiently than by {@link #writeUnsignedLong}.
 	 * Use {@link #writeUnsignedLong} to encode values that are positive.
-	 *
-	 * @apiNote The resulting varint uses ZigZag encoding as well, which is more efficient at
+	 * <p>
+	 * The resulting varint uses ZigZag encoding as well, which is more efficient at
 	 *       encoding negative values than pure VLQ.
 	 */
 	public void writeLong(long v) throws IOException {
@@ -92,8 +92,8 @@ public class VLQOutputStream extends FilterOutputStream {
 	 * Both negative and positive values are supported, but only positive values are encoded
 	 * efficiently, negative values are taking a toll and use six bytes. Use {@link #writeLong}
 	 * to encode negative and positive values.
-	 *
-	 * @apiNote Don't use it for negative values, the resulting varint is always ten
+	 * <p>
+	 * Do not use it for negative values, the resulting varint is always ten
 	 *       bytes long – it is, effectively, treated like a very large unsigned integer.
 	 *       If you use {@link #writeLong}, the resulting varint uses ZigZag encoding,
 	 *       which is much more efficient.

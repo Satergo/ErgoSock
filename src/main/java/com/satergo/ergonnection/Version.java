@@ -2,9 +2,6 @@ package com.satergo.ergonnection;
 
 import java.util.Comparator;
 
-/**
- * The JDK's {@link Runtime.Version} exists, but it disallows 0 as the third field of the version (i.e. 4.0.0 is invalid according to it)
- */
 public record Version(int major, int minor, int patch) implements Comparable<Version> {
 
 	public static Version parse(String s) {
