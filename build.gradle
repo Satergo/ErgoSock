@@ -24,7 +24,10 @@ repositories {
 }
 
 dependencies {
-    api 'org.scorexfoundation:sigma-state_2.13:5.0.9'
+    api ('org.scorexfoundation:sigma-state_2.13:5.0.14') {
+        exclude group: 'org.bouncycastle', module: 'bcprov-jdk15to18'
+        exclude group: 'org.bouncycastle', module: 'bcprov-jdk15on'
+    }
     implementation 'org.bouncycastle:bcprov-jdk18on:1.78.1'
     api 'org.jspecify:jspecify:1.0.0'
 

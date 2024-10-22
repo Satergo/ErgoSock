@@ -1,7 +1,7 @@
 package com.satergo.ergonnection.modifiers.data;
 
 import com.satergo.ergonnection.VLQOutputStream;
-import sigmastate.utils.SigmaByteReader;
+import sigma.serialization.SigmaByteReader;
 
 import java.io.IOException;
 import java.util.Arrays;

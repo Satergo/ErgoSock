@@ -2,12 +2,12 @@ package com.satergo.ergonnection.modifiers.data;
 
 import com.satergo.ergonnection.VLQInputStream;
 import com.satergo.ergonnection.VLQOutputStream;
-import sigmastate.basics.CryptoConstants;
-import sigmastate.crypto.BigIntegers;
-import sigmastate.crypto.Platform;
-import sigmastate.serialization.GroupElementSerializer;
-import sigmastate.serialization.SigmaSerializer;
-import sigmastate.utils.SigmaByteWriter;
+import sigma.crypto.BigIntegers;
+import sigma.crypto.CryptoConstants;
+import sigma.crypto.Platform;
+import sigma.serialization.GroupElementSerializer;
+import sigma.serialization.SigmaByteWriter;
+import sigma.serialization.SigmaSerializer;
 
 import java.io.IOException;
 import java.math.BigInteger;

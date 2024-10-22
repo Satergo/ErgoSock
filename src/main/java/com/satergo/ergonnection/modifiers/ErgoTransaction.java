@@ -8,8 +8,8 @@ import com.satergo.ergonnection.modifiers.data.Input;
 import com.satergo.ergonnection.modifiers.data.TokenId;
 import com.satergo.ergonnection.protocol.ProtocolModifier;
 import org.jspecify.annotations.Nullable;
-import sigmastate.serialization.SigmaSerializer;
-import sigmastate.utils.SigmaByteReader;
+import sigma.serialization.SigmaByteReader;
+import sigma.serialization.SigmaSerializer;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

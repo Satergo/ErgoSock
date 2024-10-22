@@ -3,12 +3,13 @@ package com.satergo.ergonnection.modifiers.data;
 import com.satergo.ergonnection.VLQOutputStream;
 import org.ergoplatform.ErgoBox;
 import org.jspecify.annotations.Nullable;
-import sigmastate.SType;
-import sigmastate.Values;
-import sigmastate.serialization.ErgoTreeSerializer;
-import sigmastate.serialization.SigmaSerializer;
-import sigmastate.utils.SigmaByteReader;
-import sigmastate.utils.SigmaByteWriter;
+import sigma.ast.ErgoTree;
+import sigma.ast.EvaluatedValue;
+import sigma.ast.SType;
+import sigma.serialization.ErgoTreeSerializer;
+import sigma.serialization.SigmaByteReader;
+import sigma.serialization.SigmaByteWriter;
+import sigma.serialization.SigmaSerializer;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -16,15 +17,15 @@ import java.util.List;
 import java.util.Map;
 
 public record ErgoBoxCandidate(long value,
-							   Values.ErgoTree ergoTree,
+							   ErgoTree ergoTree,
 							   int creationHeight,
 							   Map<TokenId, Long> tokens,
-							   LinkedHashMap<ErgoBox.NonMandatoryRegisterId, Values.EvaluatedValue<SType>> additionalRegisters) implements ErgoBoxAssets {
+							   LinkedHashMap<ErgoBox.NonMandatoryRegisterId, EvaluatedValue<SType>> additionalRegisters) implements ErgoBoxAssets {
 
 	public static ErgoBoxCandidate parseBodyWithIndexedDigests(@Nullable List<TokenId> digestsInTx, SigmaByteReader sbr) {
 		long value = sbr.getULong();
 
-		Values.ErgoTree tree = ErgoTreeSerializer.DefaultSerializer().deserializeErgoTree(
+		ErgoTree tree = ErgoTreeSerializer.DefaultSerializer().deserializeErgoTree(
 				sbr, SigmaSerializer.MaxPropositionSize(), false);
 
 		int creationHeight = sbr.getUIntExact();
@@ -46,9 +47,9 @@ public record ErgoBoxCandidate(long value,
 			}
 		}
 		int registerCount = sbr.getUByte();
-		LinkedHashMap<ErgoBox.NonMandatoryRegisterId, Values.EvaluatedValue<SType>> registers = new LinkedHashMap<>();
+		LinkedHashMap<ErgoBox.NonMandatoryRegisterId, EvaluatedValue<SType>> registers = new LinkedHashMap<>();
 		for (int i = 0; i < registerCount; i++) {
-			Values.EvaluatedValue<SType> constant = (Values.EvaluatedValue<SType>) sbr.getValue();
+			EvaluatedValue<SType> constant = (EvaluatedValue<SType>) sbr.getValue();
 			registers.put(ErgoBox.nonMandatoryRegisters().apply(i), constant);
 		}
 		return new ErgoBoxCandidate(value, tree, creationHeight, tokens, registers);
