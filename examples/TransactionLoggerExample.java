@@ -5,8 +5,8 @@ import com.satergo.ergonnection.messages.ModifierRequest;
 import com.satergo.ergonnection.messages.ModifierResponse;
 import com.satergo.ergonnection.modifiers.ErgoTransaction;
 import com.satergo.ergonnection.protocol.ProtocolMessage;
+import com.satergo.ergonnection.protocol.ProtocolModifier;
 import com.satergo.ergonnection.records.Peer;
-import com.satergo.ergonnection.records.RawModifier;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -42,16 +42,17 @@ public class TransactionLoggerExample {
 					ergoSocket.send(new ModifierRequest(ErgoTransaction.TYPE_ID, requestedIds));
 				}
 			} else if (msg instanceof ModifierResponse mr) {
-				for (RawModifier modifier : mr.rawModifiers()) {
-					if (modifier.typeId() != ErgoTransaction.TYPE_ID) continue;
-					// check requestedIds for rawModifier.id() then remove it from the list and print the deserialized transaction
-					for (Iterator<byte[]> iterator = requestedIds.iterator(); iterator.hasNext();) {
-						byte[] id = iterator.next();
-						if (Arrays.equals(id, modifier.id())) {
-							iterator.remove();
-							ErgoTransaction tx = ErgoTransaction.deserialize(modifier.id(), modifier.object());
-							System.out.println("[" + hhmmss() + "] Transaction: " + tx);
-							break;
+				for (ProtocolModifier modifier : mr.modifiers()) {
+					if (modifier instanceof ErgoTransaction tx) {
+						// check requestedIds for rawModifier.id() then remove it from the list and print the deserialized transaction
+						for (Iterator<byte[]> iterator = requestedIds.iterator(); iterator.hasNext(); ) {
+							byte[] id = iterator.next();
+							// we had requested this transaction, so remove it from the list and use it
+							if (Arrays.equals(id, modifier.id())) {
+								iterator.remove();
+								System.out.println("[" + hhmmss() + "] Transaction: " + tx);
+								break;
+							}
 						}
 					}
 				}
