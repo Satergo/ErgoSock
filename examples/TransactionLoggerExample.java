@@ -21,14 +21,14 @@ public class TransactionLoggerExample {
 
 		ErgoSocket ergoSocket = new ErgoSocket(
 				new InetSocketAddress("127.0.0.1", 9030),
-				new Peer("ergoref", "ergo-mainnet-5.0.12", Version.parse("5.0.12"), ErgoSocket.BASIC_FEATURE_SET));
+				new Peer("ergoref", "ergo-mainnet-5.0.24", Version.parse("5.0.24"), ErgoSocket.BASIC_FEATURE_SET));
 
 		ergoSocket.sendHandshake();
 		ergoSocket.acceptHandshake();
 
 		ArrayList<byte[]> requestedIds = new ArrayList<>();
 
-		System.out.println("Peer info: " + ergoSocket.getPeerInfo());
+		System.out.println("[" + hhmmss() + "] Peer info: " + ergoSocket.getPeerInfo());
 
 		while (true) {
 			ProtocolMessage msg = ergoSocket.acceptMessage();
@@ -44,15 +44,9 @@ public class TransactionLoggerExample {
 			} else if (msg instanceof ModifierResponse mr) {
 				for (ProtocolModifier modifier : mr.modifiers()) {
 					if (modifier instanceof ErgoTransaction tx) {
-						// check requestedIds for rawModifier.id() then remove it from the list and print the deserialized transaction
-						for (Iterator<byte[]> iterator = requestedIds.iterator(); iterator.hasNext(); ) {
-							byte[] id = iterator.next();
-							// we had requested this transaction, so remove it from the list and use it
-							if (Arrays.equals(id, modifier.id())) {
-								iterator.remove();
-								System.out.println("[" + hhmmss() + "] Transaction: " + tx);
-								break;
-							}
+						boolean wasRequested = requestedIds.removeIf(id -> Arrays.equals(id, modifier.id()));
+						if (wasRequested) {
+							System.out.println("[" + hhmmss() + "] Transaction: " + tx);
 						}
 					}
 				}

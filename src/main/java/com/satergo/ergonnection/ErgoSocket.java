@@ -101,6 +101,8 @@ public class ErgoSocket extends Socket {
 	 * @return A message from the peer
 	 */
 	public ProtocolMessage acceptMessage() throws IOException {
+		int code;
+		byte[] bytes;
 		try {
 			byte[] magic = new byte[4];
 			in.readFully(magic);
@@ -108,18 +110,20 @@ public class ErgoSocket extends Socket {
 				close();
 				throw new IllegalArgumentException("Incorrect magic " + Arrays.toString(magic) + " received (must be " + Arrays.toString(networkMagic) + ")");
 			}
-			int code = in.readUnsignedByte();
+			code = in.readUnsignedByte();
 			int length = in.readInt();
 			in.skipNBytes(4); // checksum
-			byte[] bytes = new byte[length];
+			bytes = new byte[length];
 			in.readFully(bytes);
-			return Protocol.deserializeMessage(code, bytes);
 		} catch (EOFException e) {
 			// Receiving this exception is due to the socket being closed, but it will not have
 			// been marked as such so this method is called
 			close();
-			throw new SocketException("Socket is closed");
+			SocketException ex = new SocketException("Socket is closed");
+			ex.initCause(e);
+			throw ex;
 		}
+		return Protocol.deserializeMessage(code, bytes);
 	}
 
 	public void sendHandshake() throws IOException {

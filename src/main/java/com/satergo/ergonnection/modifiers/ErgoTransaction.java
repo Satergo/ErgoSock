@@ -31,37 +31,32 @@ public record ErgoTransaction(byte @Nullable [] id, List<Input> inputs, List<Dat
 	 * @param id optional (nullable)
 	 */
 	public static ErgoTransaction deserialize(byte[] id, byte[] data) throws IOException {
-		VLQInputStream in = new VLQInputStream(new ByteArrayInputStream(data));
-		int inputCount = in.readUnsignedShort();
+		SigmaByteReader sbr = SigmaSerializer.startReader(data, 0);
+		int inputCount = sbr.getUShort();
 		ArrayList<Input> inputs = new ArrayList<>();
-		int available = in.available();
-		SigmaByteReader sbr = SigmaSerializer.startReader(data, data.length - available);
 		for (int i = 0; i < inputCount; i++) {
 			inputs.add(Input.deserialize(sbr));
 		}
-		in.skipNBytes(available - sbr.remaining());
 
-		int dataInputCount = in.readUnsignedShort();
+		int dataInputCount = sbr.getUShort();
 		ArrayList<DataInput> dataInputs = new ArrayList<>();
 		for (int i = 0; i < dataInputCount; i++) {
-			dataInputs.add(new DataInput(in.readNFully(32)));
+			dataInputs.add(new DataInput(sbr.getBytes(32)));
 		}
 
 		// parse distinct ids of tokens in transaction outputs
-		int tokensCount = (int) in.readUnsignedInt();
+		int tokensCount = sbr.getUIntExact();
 		ArrayList<TokenId> tokens = new ArrayList<>();
 		for (int i = 0; i < tokensCount; i++) {
-			tokens.add(new TokenId(in.readNFully(32)));
+			tokens.add(new TokenId(sbr.getBytes(32)));
 		}
 
-		int outputCandidatesCount = in.readUnsignedShort();
+		int outputCandidatesCount = sbr.getUShort();
 		ArrayList<ErgoBoxCandidate> outputCandidates = new ArrayList<>();
-		sbr.position_$eq(data.length - in.available());
 		for (int i = 0; i < outputCandidatesCount; i++) {
 			ErgoBoxCandidate ergoBoxCandidate = ErgoBoxCandidate.parseBodyWithIndexedDigests(tokens, sbr);
 			outputCandidates.add(ergoBoxCandidate);
 		}
-		in.skipNBytes(available - sbr.remaining());
 
 		return new ErgoTransaction(
 				id,
