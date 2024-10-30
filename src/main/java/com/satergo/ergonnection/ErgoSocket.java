@@ -108,7 +108,7 @@ public class ErgoSocket extends Socket {
 			in.readFully(magic);
 			if (!Arrays.equals(networkMagic, magic)) {
 				close();
-				throw new IllegalArgumentException("Incorrect magic " + Arrays.toString(magic) + " received (must be " + Arrays.toString(networkMagic) + ")");
+				throw new IllegalStateException("Incorrect magic " + Arrays.toString(magic) + " received (must be " + Arrays.toString(networkMagic) + ")");
 			}
 			code = in.readUnsignedByte();
 			int length = in.readInt();
